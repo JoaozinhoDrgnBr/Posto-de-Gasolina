@@ -9,10 +9,13 @@
 #define CYN "\e[0;36m"
 #define WHT "\e[0;37m"
 
+void addcarro(int fila, int *carro);
+void menu2(float vend, float preco, int atend, float armaz, int flag2);
+
 int main(void) {
   float preco, armaz = 0, vend = 0, i;
   // i=para armazenar quantos litros serão abastecidos em um carro
-  int fila, carro = 0, flag, flag2, flag3, atend = 0;
+  int fila, carro = 0, flag, flag2, atend = 0;
   // flags = escolhas para menus
 
   printf("Programa por: João Otávio Bazzo Zimermann\n");
@@ -27,6 +30,9 @@ int main(void) {
   scanf("%f", &armaz);
 
   while (flag != 5) {
+    flag2 = 0;
+    // resetando a variavel, estava permanecendo 6 e não entrando em relatórios
+    // novamente
     printf("\e[1;1H\e[2J");
     // system("clear");
     printf(WHT
@@ -37,48 +43,29 @@ int main(void) {
 
     switch (flag) {
     case 1:
-      if (carro < fila) {
-        ++carro;
-        printf(GRN "Carro adicionado\n");
-      } else {
-        printf(RED "A fila está em capacidade máxima\n");
-      }
+      addcarro(fila, &carro);
       break;
     case 2:
-      if (carro > 0) {
-        printf(WHT "Informe quantos litros serão abastecidos:\n");
+      if (armaz <= 0) {
+        printf("Não há mais combustivel nas bombas, carros serão liberados\n");
+        carro = 0;
+      } else if (carro > 0) {
+        printf("Informe quanto combustivel será abastecido:\n");
         scanf("%f", &i);
-        if (armaz <= 0) {
-          printf("Não há mais combustivel, carros serão liberados");
-          carro = 0;
-        } else if (i > armaz) {
-          printf("Quantidade excede ao que resta nas reservas, abastecer com o "
-                 "restante: %.3f litros?\n" GRN "1.Sim\n" RED "2.Não\n" WHT,
+        if (i > armaz) {
+          printf("Combustivel informado excede ao restante na bomba: "
+                 "%.3f\nCarro será liberado\n",
                  armaz);
-          scanf("%d", &flag3);
-          switch (flag3) {
-          case 1:
-            i = armaz;
-            armaz = 0;
-            vend = vend + i;
-            ++atend;
-            printf(GRN "Carro abastecido\n");
-            break;
-          case 2:
-            printf(RED "Carro não foi abastecido\n");
-            break;
-          default:
-            printf("Operação cancelada, instrução inválida");
-          }
-        } else {
           --carro;
-          printf(GRN "Carro abastecido\n");
+        } else {
           ++atend;
+          --carro;
           armaz = armaz - i;
           vend = vend + i;
+          printf(GRN "Carro abastecido\n" WHT);
         }
       } else {
-        printf(YEL "Não há carros para abastecer\n");
+        printf(RED "Não há carros para abastecer" WHT);
       }
       break;
     case 3:
@@ -95,32 +82,7 @@ int main(void) {
             "Gerar arquivo para impressão\n6. Voltar ao menu anterior\n");
         scanf("%d", &flag2);
         printf("\n");
-        switch (flag2) {
-        case 1:
-          printf("%.2f litros foram vendidos\n", vend);
-          break;
-        case 2:
-          printf("R$%.2f foram arrecadados\n", vend * preco);
-          break;
-        case 3:
-          printf("%d carros foram abastecidos\n", atend);
-          break;
-        case 4:
-          printf("%.2f de combustivel restam no tanque\n", armaz);
-          break;
-        case 5:
-          printf("Arquivo sendo gerado...\n");
-          break;
-        case 6:
-          printf(YEL "Voltando...\n");
-          break;
-        default:
-          printf(RED "Opção inválida\n");
-          break;
-        }
-        printf(WHT "\nPressione qualquer tecla para continuar:");
-        getchar();
-        getchar();
+        menu2(vend, preco, atend, armaz, flag2);
       }
       break;
     case 5:
@@ -137,4 +99,43 @@ int main(void) {
   }
 
   return 0;
+}
+
+void addcarro(int fila, int *carro) {
+  if (*carro < fila) {
+    *carro = *carro + 1;
+    printf(GRN "Carro adicionado\n");
+  } else {
+    printf(RED "A fila está em capacidade máxima\n");
+  }
+}
+
+void menu2(float vend, float preco, int atend, float armaz, int flag2) {
+  switch (flag2) {
+  case 1:
+    printf("%.2f litros foram vendidos\n", vend);
+    break;
+  case 2:
+    printf("R$%.2f foram arrecadados\n", vend * preco);
+    break;
+  case 3:
+    printf("%d carros foram abastecidos\n", atend);
+    break;
+  case 4:
+    printf("%.2f de combustivel restam no tanque\n", armaz);
+    break;
+  case 5:
+    printf(YEL "Arquivo sendo gerado...\n");
+    break;
+  case 6:
+    printf(YEL "Voltando...\n");
+    break;
+  default:
+    printf(RED "Opção inválida\n");
+    break;
+  }
+  printf(WHT "\nPressione qualquer tecla para continuar:");
+  getchar();
+  getchar();
+  // esse getchar está problematico, enquanto o outro funciona normalmente
 }
