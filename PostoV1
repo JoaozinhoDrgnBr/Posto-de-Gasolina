@@ -1,3 +1,5 @@
+// Versionado em https://github.com/JoaozinhoDrgnBr/Posto-de-Gasolina.git
+
 #include <stdio.h>
 #include <stdlib.h>
 #define BLK "\e[0;30m"
@@ -9,14 +11,22 @@
 #define CYN "\e[0;36m"
 #define WHT "\e[0;37m"
 
-void addcarro(int fila, int *carro);
-void menu2(float vend, float preco, int atend, float armaz, int flag2);
+struct tipocarro {
+  int ano;
+  char marca[15], modelo[15];
+} fcarro[15], atendidos[100];
+
+// void addcarro(int fila, int *carro);
+// void menu2(float vend, float preco, int atend, float armaz, int flag2,
+//            struct tipocarro atendidos);
 
 int main(void) {
   float preco, armaz = 0, vend = 0, i;
   // i=para armazenar quantos litros serão abastecidos em um carro
-  int fila, carro = 0, flag, flag2, atend = 0;
+  // j=usado como contador para whiles
+  int fila, carro = 0, flag, flag2, atend = 0, j;
   // flags = escolhas para menus
+  char ignor[2]; // apenas pra ser ignorado
 
   printf("Programa por: João Otávio Bazzo Zimermann\n");
   printf("Este programa foi criado com o proposito de gerenciar um posto de "
@@ -43,7 +53,23 @@ int main(void) {
 
     switch (flag) {
     case 1:
-      addcarro(fila, &carro);
+      if (carro < fila) {
+        carro = carro + 1;
+
+        fgets(ignor, 2, stdin);
+        fflush(stdin);
+        printf(WHT "Informe a marca do carro:\n");
+        fgets(fcarro[carro - 1].marca, 15, stdin);
+        printf("Informe o modelo do carro:\n");
+        fgets(fcarro[carro - 1].modelo, 15, stdin);
+        printf("Informe o ano do carro:\n");
+        scanf("%d", &fcarro[carro - 1].ano);
+        printf(GRN "Carro adicionado\n");
+
+      } else {
+        printf(RED "A fila está em capacidade máxima\n");
+      }
+
       break;
     case 2:
       if (armaz <= 0) {
@@ -57,9 +83,26 @@ int main(void) {
                  "%.3f\nCarro será liberado\n",
                  armaz);
           --carro;
+          j = 0;
+          while (j < carro) {
+            strcpy(fcarro[j].marca, fcarro[j + 1].marca);
+            strcpy(fcarro[j].modelo, fcarro[j + 1].modelo);
+            fcarro[j].ano = fcarro[j + 1].ano;
+            j++;
+          }
         } else {
-          ++atend;
           --carro;
+          strcpy(atendidos[atend].marca, fcarro[0].marca);
+          strcpy(atendidos[atend].modelo, fcarro[0].modelo);
+          atendidos[atend].ano = fcarro[0].ano;
+          atend++;
+          j = 0;
+          while (j < carro) {
+            strcpy(fcarro[j].marca, fcarro[j + 1].marca);
+            strcpy(fcarro[j].modelo, fcarro[j + 1].modelo);
+            fcarro[j].ano = fcarro[j + 1].ano;
+            j++;
+          }
           armaz = armaz - i;
           vend = vend + i;
           printf(GRN "Carro abastecido\n" WHT);
@@ -69,7 +112,12 @@ int main(void) {
       }
       break;
     case 3:
-      printf("A quantidade de carros na fila é de: %d\n", carro);
+      j = 0;
+      printf("A quantidade de carros na fila é de: %d\n\n", carro);
+      while (j < carro) {
+        printf("%s%s%d\n\n", fcarro[j].marca, fcarro[j].modelo, fcarro[j].ano);
+        j++;
+      }
       break;
     case 4:
       while (flag2 != 6) {
@@ -82,7 +130,38 @@ int main(void) {
             "Gerar arquivo para impressão\n6. Voltar ao menu anterior\n");
         scanf("%d", &flag2);
         printf("\n");
-        menu2(vend, preco, atend, armaz, flag2);
+        switch (flag2) {
+        case 1:
+          printf("%.2f litros foram vendidos\n", vend);
+          break;
+        case 2:
+          printf("R$%.2f foram arrecadados\n", vend * preco);
+          break;
+        case 3:
+          j = 0;
+          printf("%d carros foram abastecidos\n\n", atend);
+          while (j < atend) {
+            printf("%s%s%d\n\n", atendidos[j].marca, atendidos[j].modelo,
+                   atendidos[j].ano);
+            j++;
+          }
+          break;
+        case 4:
+          printf("%.2f de combustivel restam no tanque\n", armaz);
+          break;
+        case 5:
+          printf(YEL "Arquivo sendo gerado...\n");
+          break;
+        case 6:
+          printf(YEL "Voltando...\n");
+          break;
+        default:
+          printf(RED "Opção inválida\n");
+          break;
+        }
+        printf(WHT "\nPressione qualquer tecla para continuar:");
+        getchar();
+        getchar();
       }
       break;
     case 5:
@@ -99,43 +178,4 @@ int main(void) {
   }
 
   return 0;
-}
-
-void addcarro(int fila, int *carro) {
-  if (*carro < fila) {
-    *carro = *carro + 1;
-    printf(GRN "Carro adicionado\n");
-  } else {
-    printf(RED "A fila está em capacidade máxima\n");
-  }
-}
-
-void menu2(float vend, float preco, int atend, float armaz, int flag2) {
-  switch (flag2) {
-  case 1:
-    printf("%.2f litros foram vendidos\n", vend);
-    break;
-  case 2:
-    printf("R$%.2f foram arrecadados\n", vend * preco);
-    break;
-  case 3:
-    printf("%d carros foram abastecidos\n", atend);
-    break;
-  case 4:
-    printf("%.2f de combustivel restam no tanque\n", armaz);
-    break;
-  case 5:
-    printf(YEL "Arquivo sendo gerado...\n");
-    break;
-  case 6:
-    printf(YEL "Voltando...\n");
-    break;
-  default:
-    printf(RED "Opção inválida\n");
-    break;
-  }
-  printf(WHT "\nPressione qualquer tecla para continuar:");
-  getchar();
-  getchar();
-  // esse getchar está problematico, enquanto o outro funciona normalmente
 }
