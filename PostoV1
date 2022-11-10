@@ -14,7 +14,7 @@
 struct tipocarro {
   int ano;
   char marca[15], modelo[15];
-} fcarro[15], atendidos[100];
+} *fcarro, *atendidos;
 
 // void addcarro(int fila, int *carro);
 // void menu2(float vend, float preco, int atend, float armaz, int flag2,
@@ -36,6 +36,7 @@ int main(void) {
   scanf("%f", &preco);
   printf("Informe o tamanho da fila suportada:\n");
   scanf("%d", &fila);
+  fcarro=calloc(fila, sizeof(struct tipocarro));
   printf("Informe a quantidade de combustivel armazenado:\n");
   scanf("%f", &armaz);
 
@@ -92,6 +93,7 @@ int main(void) {
           }
         } else {
           --carro;
+          atendidos=(struct tipocarro *) realloc (atendidos , (atend+1) * sizeof(struct tipocarro));
           strcpy(atendidos[atend].marca, fcarro[0].marca);
           strcpy(atendidos[atend].modelo, fcarro[0].modelo);
           atendidos[atend].ano = fcarro[0].ano;
