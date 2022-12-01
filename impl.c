@@ -79,4 +79,11 @@ void fmenu2(float vend, float preco, int atend, struct tipocarro atendidos[],
     getchar();
     getchar();
   }
-}
+  }
+  
+  void flush_in() {
+  int ch;
+    while ((ch = fgetc(stdin))!= EOF && ch != '\n'){
+      
+    }
+  }

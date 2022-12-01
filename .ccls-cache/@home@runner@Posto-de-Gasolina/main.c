@@ -12,7 +12,7 @@ int main(void) {
   // j=usado como contador para whiles
   int fila, carro = 0, flag, atend = 0, j;
   // flags = escolhas para menus
-  char ignor[2]; // apenas pra ser ignorado
+  char ignor[1]; // apenas pra ser ignorado
 
   printf("Programa por: João Otávio Bazzo Zimermann\n");
   printf("Este programa foi criado com o proposito de gerenciar um posto de "
@@ -41,7 +41,7 @@ int main(void) {
       if (carro < fila) {
         carro = carro + 1;
 
-        fgets(ignor, 2, stdin);
+        fgets(ignor, 1, stdin);
         fflush(stdin);
         printf(WHT "Informe a marca do carro:\n");
         fgets(fcarro[carro - 1].marca, 15, stdin);

@@ -14,3 +14,5 @@ struct tipocarro {
 
 void fmenu2(float vend, float preco, int atend, struct tipocarro atendidos[],
             float armaz);
+
+void flush_in();
